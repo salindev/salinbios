@@ -20,9 +20,9 @@ local function QA(text)
     end
 end
 
-if QA("Create whitelist for bootloader access?") then
+if QA("Создать белый список для доступа к загрузчику?") then
     repeat
-        io.write('Whitelist example: {"hohserg", "Fingercomp", "Saghetti"}\nWhitelist: ')
+        io.write('Пример белого списка: {"hohserg", "Fingercomp", "Saghetti"}\nWhitelist: ')
         users = read()
         local err = select(2, require("serialization").unserialize(users))
 
@@ -30,20 +30,20 @@ if QA("Create whitelist for bootloader access?") then
             io.stderr:write(err .. "\n")
         else
             if #users > freespace then
-                io.stderr:write(("\nMaximum whitelist size is %s and you used %s\n"):format(freespace, #users))
+                io.stderr:write(("\nМаксимальный размер белого списка составляет %s, и вы использовали %s\n"):format(freespace, #users))
             elseif #users > 0 then
-                users = ("#%s#%s"):format(users, QA("Request user press on boot?") and "*" or "")
+                users = ("#%s#%s"):format(users, QA("Запросить нажатие пользователем при загрузке?") and "*" or "")
             end
         end
     until users and #users > 0 and not err
 end
 
-readOnly = QA("Make EEPROM read only?")
-os.execute("wget -f https://github.com/BrightYC/Cyan/raw/master/cyan.comp /tmp/cyan.comp")
+readOnly = QA("Сделать EEPROM только для чтения?")
+os.execute("wget -f https://github.com/salindev/salinbios/blob/main/cyan.comp /tmp/cyan.comp")
 local file = io.open("/tmp/cyan.comp", "r")
 local data = file:read("*a")
 file:close()
-print("Flashing...")
+print("Записываю...")
 eeprom.set(data)
 eeprom.setData((eeprom.getData():match("[a-f-0-9]+") or eeprom.getData()) .. (users or ""), true)
 eeprom.setLabel("Mythic BIOS")
